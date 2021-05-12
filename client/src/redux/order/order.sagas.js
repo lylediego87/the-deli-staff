@@ -1,7 +1,9 @@
 import { takeLatest, put, all, call, take } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import moment from 'moment';
+
 import orderActionTypes from './order.types';
-import {fetchOrdersSuccess, fetchOrdersFailure} from './order.actions';
+import {fetchOrdersSuccess, fetchOrdersFailure, setOrderStatusFailure} from './order.actions';
 import { firestore } from '../../firebase/firebase.utils';
 
 export function* fetchOrdersAsync(){
@@ -17,12 +19,42 @@ export function* fetchOrdersAsync(){
   }
 }
 
+export function* completeOrder({payload}){
+  const ref = firestore.doc(`orders/${payload.orderId}`);
+  try {
+    ref.set({status: 'completed' },{merge: true});
+    yield call(notifyWithSMS, payload.phoneNo);
+  } catch (error) {
+    yield put(setOrderStatusFailure(error));
+  }
+}
+
 export function* onFetchOrdersStart() {
   yield takeLatest(orderActionTypes.FETCH_ORDERS_START, fetchOrdersAsync);
 }
 
+export function* onSetOrderStatusComplete(){
+  yield takeLatest(orderActionTypes.SET_ORDER_STATUS_COMPLETE, completeOrder);
+}
+
 export function* orderSagas() {
-  yield all([call(onFetchOrdersStart)])
+  yield all([
+    call(onFetchOrdersStart),
+    call(onSetOrderStatusComplete)
+  ])
+}
+ 
+function* notifyWithSMS(phoneNo) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ phoneNo: phoneNo }),
+  }
+  const response = yield fetch('/api/nofifyWtihSms', options);
+  const body = yield response.text();
+  yield console.log(body);
 }
 
 function* transformDocs(data) {

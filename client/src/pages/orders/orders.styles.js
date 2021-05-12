@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled,{ css } from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -12,4 +12,11 @@ export const OrderInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px 20px;
+`
+
+export const ActionButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px 10px;
 `

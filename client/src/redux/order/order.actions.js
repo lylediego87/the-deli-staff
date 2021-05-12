@@ -13,3 +13,13 @@ export const fetchOrdersFailure = error => ({
   type: orderActionTypes.FETCH_ORDERS_FAILURE,
   payload: error
 })
+
+export const setOrderStatusComplete = payload => ({
+  type: orderActionTypes.SET_ORDER_STATUS_COMPLETE,
+  payload: payload
+})
+
+export const setOrderStatusFailure = error => ({
+  type: orderActionTypes.FETCH_ORDERS_FAILURE,
+  payload: error
+})
