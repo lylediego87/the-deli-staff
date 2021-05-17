@@ -7,7 +7,10 @@ import {fetchOrdersSuccess, fetchOrdersFailure, setOrderStatusFailure} from './o
 import { firestore } from '../../firebase/firebase.utils';
 
 export function* fetchOrdersAsync(){
-  const ref = firestore.collection('orders').orderBy('timestamp');
+  const midnightThisMorning = moment().startOf('day').toDate();
+  const ref = firestore.collection('orders')
+    .where('timestamp','>', midnightThisMorning)
+    .orderBy('timestamp', 'desc');
   const channel = eventChannel(emit => ref.onSnapshot(emit));
   try{ 
     while(true) {

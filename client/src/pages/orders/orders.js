@@ -25,12 +25,10 @@ const OrdersPage = ({fetchOrders, orders,completeOrder}) => {
       columns={[
         {title: 'Email', field: 'email'},
         {title: 'Phone No', field: 'phoneNo'},
-        {title: 'Total Items', field: 'totalItems'},
         {title: 'Payment Method', field: 'paymentMethod'},
         {title: 'Total Amount', field: 'totalCost'},
         {title: 'Delivery Method', field: 'deliveryMethod'},
         {title: 'Time', field: 'time'},
-        {title: 'Order', field: 'date'},
         {title: 'Status', field: 'status'}
       ]}
       data={orders}
@@ -60,7 +58,7 @@ const OrdersPage = ({fetchOrders, orders,completeOrder}) => {
               selectedOrder.items.map(i => 
                 <div key={i.id}>
                   <p><strong>Name - {i.name}</strong></p>
-                  <p><strong>Descrition - {i.description}</strong></p>
+                  <p><strong>Description - {i.description}</strong></p>
                   <p><strong>Quantity - {i.quantity}</strong></p>
                 </div>
               )
