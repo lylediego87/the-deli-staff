@@ -32,6 +32,15 @@ export function* completeOrder({payload}){
   }
 }
 
+export function* closeOrder({payload}){
+  const ref = firestore.doc(`orders/${payload.orderId}`);
+  try {
+    ref.set({status: 'closed' },{merge: true});
+  } catch (error) {
+    yield put(setOrderStatusFailure(error));
+  }
+}
+
 export function* onFetchOrdersStart() {
   yield takeLatest(orderActionTypes.FETCH_ORDERS_START, fetchOrdersAsync);
 }
@@ -40,10 +49,15 @@ export function* onSetOrderStatusComplete(){
   yield takeLatest(orderActionTypes.SET_ORDER_STATUS_COMPLETE, completeOrder);
 }
 
+export function* onSetOrderStatusClosed(){
+  yield takeLatest(orderActionTypes.SET_ORDER_STATUS_CLOSED, closeOrder);
+}
+
 export function* orderSagas() {
   yield all([
     call(onFetchOrdersStart),
-    call(onSetOrderStatusComplete)
+    call(onSetOrderStatusComplete),
+    call(onSetOrderStatusClosed)
   ])
 }
  

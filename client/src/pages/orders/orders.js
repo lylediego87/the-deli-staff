@@ -6,11 +6,11 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { Container, OrderInfoContainer, ActionButtons } from './orders.styles';
-import { fetchOrdersStart, setOrderStatusComplete } from '../../redux/order/order.actions';
+import { fetchOrdersStart, setOrderStatusComplete, setOrderStatusClosed } from '../../redux/order/order.actions';
 import { selectOrders } from '../../redux/order/order.selectors';
 import Button from '../../components/custom-button/custom-button.component';
 
-const OrdersPage = ({fetchOrders, orders,completeOrder}) => {
+const OrdersPage = ({fetchOrders, orders,completeOrder, closeOrder}) => {
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -18,7 +18,7 @@ const OrdersPage = ({fetchOrders, orders,completeOrder}) => {
   useEffect(() => {
     fetchOrders();
   },[fetchOrders]);
-
+  
   return(
   <Container>
     <MaterialTable 
@@ -57,9 +57,8 @@ const OrdersPage = ({fetchOrders, orders,completeOrder}) => {
             {
               selectedOrder.items.map(i => 
                 <div key={i.id}>
-                  <p><strong>Name - {i.name}</strong></p>
-                  <p><strong>Description - {i.description}</strong></p>
-                  <p><strong>Quantity - {i.quantity}</strong></p>
+                  <p><strong>{i.name} X {i.quantity}</strong></p>
+                  <p><strong>{i.description}</strong></p>
                 </div>
               )
             } 
@@ -68,13 +67,23 @@ const OrdersPage = ({fetchOrders, orders,completeOrder}) => {
         <CardActions>
           <ActionButtons>
             {
-              selectedOrder.status === "open" 
-              ?
-                <Button onClick={() => completeOrder({orderId: selectedOrder.id, phoneNo: selectedOrder.phoneNo})}>
+              selectedOrder.status === "open" ?
+                <Button onClick={() => {
+                    completeOrder({orderId: selectedOrder.id, phoneNo: selectedOrder.phoneNo});
+                    setSelectedRow(null);
+                    setSelectedOrder(null);
+                  }
+                }>
                   Complete Order
                 </Button>
-              :
-              <Button>Close Order</Button>
+              : selectedOrder.status === "completed" ? 
+                <Button onClick={() => {
+                    closeOrder({orderId: selectedOrder.id})
+                    setSelectedRow(null);
+                    setSelectedOrder(null);
+                  }
+                }>Close Order</Button>
+              : null
             }
           </ActionButtons>
         </CardActions>
@@ -89,7 +98,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchOrders: () => dispatch(fetchOrdersStart()),
-  completeOrder: (payload) => dispatch(setOrderStatusComplete(payload))
+  completeOrder: (payload) => dispatch(setOrderStatusComplete(payload)),
+  closeOrder: (payload) => dispatch(setOrderStatusClosed(payload))
 })
 
 export default connect(mapStateToProps,mapDispatchToProps)(OrdersPage);

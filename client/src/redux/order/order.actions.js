@@ -19,6 +19,11 @@ export const setOrderStatusComplete = payload => ({
   payload: payload
 })
 
+export const setOrderStatusClosed = payload => ({
+  type: orderActionTypes.SET_ORDER_STATUS_CLOSED,
+  payload: payload
+});
+
 export const setOrderStatusFailure = error => ({
   type: orderActionTypes.FETCH_ORDERS_FAILURE,
   payload: error
